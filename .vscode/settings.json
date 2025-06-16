@@ -24,5 +24,15 @@
   "[javascriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.exclude": {
+    "**/node_modules": true,
+    //"**/dist": true,
+    "**/build": true,
+    "**/.next": true,
+    // "**/.cache": true,
+    // "**/.git": true,
+    "**/.vscode": true,
+    "next-env.d.ts": true
+  }
 }
