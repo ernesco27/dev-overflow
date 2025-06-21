@@ -70,7 +70,6 @@ const AuthForm = <T extends FieldValues>({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    required
                     type={field.name === "password" ? "password" : "text"}
                     {...field}
                     className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border"
@@ -95,7 +94,7 @@ const AuthForm = <T extends FieldValues>({
         </Button>
         {formType === "SIGN_IN" ? (
           <p>
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href={ROUTES.SIGN_UP}
               className="paragraph-semibold primary-text-gradient"
