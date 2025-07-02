@@ -45,7 +45,7 @@ const LocalSearch = ({ imgSrc, otherClasses, route, placeholder }: Search) => {
           router.push(newUrl, { scroll: false });
         }
       }
-    }, 1000);
+    }, 300);
 
     return () => {
       clearTimeout(delayDounceFn);
