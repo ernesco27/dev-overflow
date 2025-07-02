@@ -13,9 +13,6 @@ interface Props {
 const QuestionCard = ({
   question: { _id, title, tags, author, upVotes, answers, views, createdAt },
 }: Props) => {
-  console.log(author);
-  console.log("author name", author?.[0].name);
-
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
@@ -37,11 +34,11 @@ const QuestionCard = ({
       </div>
       <div className="flex-between mt-6 w-full flex-wrap gap-3">
         <Metric
-          imgUrl={author?.[0].image}
-          alt={author?.[0].name}
-          value={author?.[0].name}
+          imgUrl={author.image}
+          alt={author.name}
+          value={author.name}
           title={`• asked ${getTimeStamp(createdAt)}`}
-          href={ROUTES.PROFILE(author?.[0]._id)}
+          href={ROUTES.PROFILE(author._id)}
           textStyles="body-medium text-dark400_light700"
           isAuthor
         />

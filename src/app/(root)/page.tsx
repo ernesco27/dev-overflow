@@ -13,14 +13,13 @@ const questions = [
       { _id: "1", name: "React" },
       { _id: "2", name: "Nextjs" },
     ],
-    author: [
-      {
-        _id: "1",
-        name: "John Doe",
-        image:
-          "https://static.vecteezy.com/system/resources/thumbnails/006/487/917/small_2x/man-avatar-icon-free-vector.jpg",
-      },
-    ],
+    author: {
+      _id: "1",
+      name: "John Doe",
+      image:
+        "https://static.vecteezy.com/system/resources/thumbnails/006/487/917/small_2x/man-avatar-icon-free-vector.jpg",
+    },
+
     upVotes: 10,
     answers: 5,
     views: 100,
@@ -33,14 +32,13 @@ const questions = [
       { _id: "3", name: "Next.js" },
       { _id: "4", name: "React" },
     ],
-    author: [
-      {
-        _id: "2",
-        name: "Jane Smith",
-        image:
-          "https://static.vecteezy.com/system/resources/previews/014/194/216/non_2x/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg",
-      },
-    ],
+    author: {
+      _id: "2",
+      name: "Jane Smith",
+      image:
+        "https://static.vecteezy.com/system/resources/previews/014/194/216/non_2x/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg",
+    },
+
     upVotes: 8,
     answers: 3,
     views: 75,
