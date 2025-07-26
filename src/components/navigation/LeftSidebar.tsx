@@ -7,15 +7,16 @@ import ROUTES from "../../../constants/route";
 
 const LeftSidebar = async () => {
   const session = await auth();
+  const userId = session?.user?.id;
 
   return (
     <section className="flex h-screen w-fit  lg:w-[266px] flex-col justify-between background-light900_dark200 border-r light-border sticky left-0 top-0 p-6 pt-36 overflow-y-auto shadow-light-300 dark:shadow-none max-sm:hidden custom-scrollbar ">
       <div className="flex flex-1 flex-col gap-6">
-        <NavLinks />
+        <NavLinks userId={userId!} />
       </div>
 
       <div className="flex flex-col gap-3">
-        {!session ? (
+        {!userId ? (
           <>
             <Button className="small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none cursor-pointer">
               <Link href={ROUTES.SIGN_IN}>
@@ -48,12 +49,12 @@ const LeftSidebar = async () => {
           <form
             action={async () => {
               "use server";
-              await signOut({ redirectTo: ROUTES.SIGN_IN });
+              await signOut();
             }}
           >
             <Button
               type="submit"
-              className="small-medium light-border-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg border px-4 py-3 shadow-none cursor-pointer "
+              className="base-medium w-fit !bg-transparent px-4 py-3 cursor-pointer"
             >
               <Image
                 src="/icons/logout-3.svg"
@@ -62,7 +63,9 @@ const LeftSidebar = async () => {
                 height={20}
                 className="invert-colors"
               />
-              <span className="ml-2">Log Out</span>
+              <span className="max-lg:hidden text-dark300_light900">
+                Log Out
+              </span>
             </Button>
           </form>
         )}
