@@ -15,11 +15,16 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 // import Editor from "../editor";
-import { useRef } from "react";
+import { useRef, useTransition } from "react";
 import { MDXEditorMethods } from "@mdxeditor/editor";
 import dynamic from "next/dynamic";
 import { z } from "zod";
 import TagCard from "../cards/TagCard";
+import { createQuestion } from "@/lib/actions/question.action";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import ROUTES from "../../../constants/route";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const Editor = dynamic(() => import("../editor"), {
   // Make sure we turn SSR off
@@ -36,6 +41,10 @@ const QuestionForm = () => {
     },
   });
 
+  const [isPending, startTransition] = useTransition();
+
+  const router = useRouter();
+
   const editorRef = useRef<MDXEditorMethods>(null);
 
   const handleTagRemove = (tag: string, field: { value: string[] }) => {
@@ -51,8 +60,23 @@ const QuestionForm = () => {
     }
   };
 
-  const handleCreateQuestion = (data: z.infer<typeof AskQuestionSchema>) => {
-    console.log(data);
+  const handleCreateQuestion = async (
+    data: z.infer<typeof AskQuestionSchema>
+  ) => {
+    startTransition(async () => {
+      const result = await createQuestion(data);
+
+      if (result.success) {
+        toast.success("Question created successfully!");
+
+        router.push(ROUTES.QUESTION(result.data._id));
+        form.reset();
+      } else {
+        toast.error(
+          result?.error?.message || "An error occurred. Please try again."
+        );
+      }
+    });
   };
 
   const handleInputKeyDown = (
@@ -180,8 +204,16 @@ const QuestionForm = () => {
           <Button
             type="submit"
             className="primary-gradient !text-light-900 w-fit"
+            disabled={isPending}
           >
-            Ask Question
+            {isPending ? (
+              <>
+                <ReloadIcon className="mr-2 size-4 animate-spin" />
+                <span>Submitting..</span>
+              </>
+            ) : (
+              <>Ask Question</>
+            )}
           </Button>
         </div>
       </form>
@@ -190,3 +222,5 @@ const QuestionForm = () => {
 };
 
 export default QuestionForm;
+
+// timestamp: 10.18
