@@ -20,24 +20,30 @@ import { MDXEditorMethods } from "@mdxeditor/editor";
 import dynamic from "next/dynamic";
 import { z } from "zod";
 import TagCard from "../cards/TagCard";
-import { createQuestion } from "@/lib/actions/question.action";
+import { createQuestion, editQuestion } from "@/lib/actions/question.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import ROUTES from "../../../constants/route";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { Question } from "../../../types/global";
 
 const Editor = dynamic(() => import("../editor"), {
   // Make sure we turn SSR off
   ssr: false,
 });
 
-const QuestionForm = () => {
+interface Params {
+  question?: Question;
+  isEdit?: boolean;
+}
+
+const QuestionForm = ({ question, isEdit = false }: Params) => {
   const form = useForm<z.infer<typeof AskQuestionSchema>>({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
-      title: "",
-      content: "",
-      tags: [],
+      title: question?.title || "",
+      content: question?.content || "",
+      tags: question?.tags.map((tag) => tag.name) || [],
     },
   });
 
@@ -64,13 +70,30 @@ const QuestionForm = () => {
     data: z.infer<typeof AskQuestionSchema>
   ) => {
     startTransition(async () => {
+      if (isEdit && question) {
+        const result = await editQuestion({
+          questionId: question?._id,
+          ...data,
+        });
+
+        if (result.success) {
+          toast.success("Question updated successfully!");
+
+          router.push(ROUTES.QUESTION(result.data._id));
+        } else {
+          toast.error(
+            result?.error?.message || "An error occurred. Please try again."
+          );
+        }
+        return;
+      }
+
       const result = await createQuestion(data);
 
       if (result.success) {
         toast.success("Question created successfully!");
 
         router.push(ROUTES.QUESTION(result.data._id));
-        form.reset();
       } else {
         toast.error(
           result?.error?.message || "An error occurred. Please try again."
@@ -212,7 +235,7 @@ const QuestionForm = () => {
                 <span>Submitting..</span>
               </>
             ) : (
-              <>Ask Question</>
+              <>{isEdit ? "Edit" : "Ask Question"}</>
             )}
           </Button>
         </div>
@@ -222,5 +245,3 @@ const QuestionForm = () => {
 };
 
 export default QuestionForm;
-
-// timestamp: 10.18
