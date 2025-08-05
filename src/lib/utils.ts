@@ -15,6 +15,6 @@ export const getDeviconClassName = (techName: string) => {
     : "devicon-devicon-plain";
 };
 
-export const getTimeStamp = (date: Date): string => {
-  return `${formatDistanceToNow(date, { addSuffix: true })}`;
+export const getTimeStamp = (createdAt: Date): string => {
+  return `${formatDistanceToNow(createdAt, { addSuffix: true })}`;
 };
