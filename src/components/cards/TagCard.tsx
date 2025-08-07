@@ -63,7 +63,7 @@ const TagCard = ({
         {content}
       </button>
     ) : (
-      <Link href={ROUTES.TAGS(_id)} className="flex justify-between">
+      <Link href={ROUTES.TAG(_id)} className="flex justify-between">
         {content}
       </Link>
     );
