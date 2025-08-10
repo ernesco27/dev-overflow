@@ -1,9 +1,7 @@
 "use server";
 
 import Question, { IQuestionDoc } from "../../../database/question.model";
-import TagQuestion, {
-  ITagQuestion,
-} from "../../../database/tag-question.model";
+import TagQuestion from "../../../database/tag-question.model"; // ITagQuestion,
 import Tag, { ITagDoc } from "../../../database/tag.model";
 import {
   ActionResponse,
@@ -51,7 +49,7 @@ export async function createQuestion(
     }
 
     const tagIds: mongoose.Types.ObjectId[] = [];
-    const tagQuestionDocuments: ITagQuestion[] = [];
+    const tagQuestionDocuments = [];
 
     for (const tag of tags) {
       const existingTag = await Tag.findOneAndUpdate(
@@ -60,9 +58,9 @@ export async function createQuestion(
         { new: true, upsert: true, session }
       );
 
-      tagIds.push(existingTag!._id);
+      tagIds.push(existingTag._id);
       tagQuestionDocuments.push({
-        tag: existingTag!._id,
+        tag: existingTag._id,
         question: question._id,
       });
     }
@@ -168,7 +166,8 @@ export async function editQuestion(
         },
         {
           $inc: { questions: -1 },
-        }
+        },
+        { session }
       );
       await TagQuestion.deleteMany(
         {

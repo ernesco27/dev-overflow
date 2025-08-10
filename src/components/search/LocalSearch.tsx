@@ -12,9 +12,16 @@ interface Search {
   otherClasses?: string;
   route: string;
   placeholder: string;
+  iconPosition?: "left" | "right";
 }
 
-const LocalSearch = ({ imgSrc, otherClasses, route, placeholder }: Search) => {
+const LocalSearch = ({
+  imgSrc,
+  otherClasses,
+  route,
+  placeholder,
+  iconPosition = "left",
+}: Search) => {
   const pathname = usePathname();
 
   const searchParams = useSearchParams();
@@ -54,13 +61,15 @@ const LocalSearch = ({ imgSrc, otherClasses, route, placeholder }: Search) => {
 
   return (
     <div className="background-light800_darkgradient flex min-h-[56px] grow items-center gap-4 rounded-[10px] px-4">
-      <Image
-        src={imgSrc}
-        alt="search icon"
-        width={24}
-        height={24}
-        className="cursor-pointer"
-      />
+      {iconPosition === "left" && (
+        <Image
+          src={imgSrc}
+          alt="search icon"
+          width={24}
+          height={24}
+          className="cursor-pointer"
+        />
+      )}
       <Input
         type="text"
         placeholder={placeholder}
@@ -73,6 +82,15 @@ const LocalSearch = ({ imgSrc, otherClasses, route, placeholder }: Search) => {
           otherClasses
         )}
       />
+      {iconPosition === "right" && (
+        <Image
+          src={imgSrc}
+          alt="search icon"
+          width={15}
+          height={15}
+          className="cursor-pointer"
+        />
+      )}
     </div>
   );
 };
