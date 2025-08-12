@@ -4,11 +4,16 @@ import Question, { IQuestionDoc } from "../../../database/question.model";
 import TagQuestion from "../../../database/tag-question.model"; // ITagQuestion,
 import Tag, { ITagDoc } from "../../../database/tag.model";
 import {
+  CreateQuestionsParams,
+  EditQuestionParams,
+  GetQuestionParams,
+} from "../../../types/action";
+import {
   ActionResponse,
   ErrorResponse,
   PaginatedSearchParams,
 } from "../../../types/global";
-// import { ActionResponse, ErrorResponse, Question, } from "../../../types/global";
+
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import { NotFoundError, UnauthorizedError } from "../http-errors";
