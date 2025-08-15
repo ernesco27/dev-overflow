@@ -9,9 +9,10 @@ interface Props {
   textStyles: string;
   imgUrl: string;
   alt: string;
-  isAuthor?: boolean;
+
   href?: string;
   imgStyles?: string;
+  titleStyles?: string;
 }
 
 const Metric = ({
@@ -20,9 +21,10 @@ const Metric = ({
   value,
   title,
   textStyles,
-  isAuthor,
+
   href,
   imgStyles,
+  titleStyles,
 }: Props) => {
   const metricContent = (
     <>
@@ -35,14 +37,11 @@ const Metric = ({
       />
       <p className={cn("flex items-center gap-1", textStyles)}>
         {value}
-        <span
-          className={cn(
-            "small-regular line-clamp-1",
-            isAuthor ? "max-sm:hidden" : ""
-          )}
-        >
-          {title}
-        </span>
+        {title && (
+          <span className={cn("small-regular line-clamp-1", titleStyles)}>
+            {title}
+          </span>
+        )}
       </p>
     </>
   );

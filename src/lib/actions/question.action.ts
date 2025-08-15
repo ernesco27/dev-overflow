@@ -181,6 +181,13 @@ export async function editQuestion(
         },
         { session }
       );
+      await Tag.deleteMany(
+        {
+          _id: { $in: tagIdsToRemove },
+          question: 0,
+        },
+        { session }
+      );
 
       question.tags = question.tags.filter(
         (tag: mongoose.Types.ObjectId) =>
@@ -226,7 +233,9 @@ export async function getQuestion(
   const { questionId } = validationResult.params!;
 
   try {
-    const question = await Question.findById(questionId).populate("tags");
+    const question = await Question.findById(questionId)
+      .populate("tags")
+      .populate("author", "_id name image");
 
     if (!question) {
       throw new NotFoundError("Question");
