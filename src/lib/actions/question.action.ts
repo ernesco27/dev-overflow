@@ -27,7 +27,6 @@ import {
   PaginatedSearchParamsSchema,
 } from "../validations";
 import mongoose, { FilterQuery } from "mongoose";
-import ROUTES from "../../../constants/route";
 
 export async function createQuestion(
   params: CreateQuestionsParams
@@ -350,8 +349,6 @@ export async function incrementViews(
 
     question.views += 1;
     await question.save();
-
-    revalidatePath(ROUTES.QUESTION(questionId));
 
     return {
       success: true,
