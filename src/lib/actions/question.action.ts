@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import Question, { IQuestionDoc } from "../../../database/question.model";
 import TagQuestion from "../../../database/tag-question.model"; // ITagQuestion,
 import Tag, { ITagDoc } from "../../../database/tag.model";
