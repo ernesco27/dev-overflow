@@ -3,12 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { Question } from "../../../database";
 import Answer, { IAnswerDoc } from "../../../database/answer.model";
-import { CreateAnswerParams } from "../../../types/action";
+import { CreateAnswerParams, GetAnswersParams } from "../../../types/action";
 import { ActionResponse, ErrorResponse } from "../../../types/global";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import { NotFoundError } from "../http-errors";
-import { AnswerServerSchema } from "../validations";
+import { AnswerServerSchema, GetAnswersSchema } from "../validations";
 import mongoose from "mongoose";
 import ROUTES from "../../../constants/route";
 
@@ -69,5 +69,69 @@ export async function CreateAnwer(
     return handleError(error) as ErrorResponse;
   } finally {
     await session.endSession();
+  }
+}
+
+export async function GetAnswers(
+  params: GetAnswersParams
+): Promise<
+  ActionResponse<{ answers: Answer[]; isNext: boolean; totalAnswers: number }>
+> {
+  const validationResult = await action({
+    params,
+    schema: GetAnswersSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const {
+    questionId,
+    page = 1,
+    pageSize = 10,
+    filter,
+  } = validationResult.params!;
+
+  const skip = (Number(page) - 1) * pageSize;
+  const limit = pageSize;
+
+  let sortCriteria = {};
+
+  switch (filter) {
+    case "latest":
+      sortCriteria = { createdAt: -1 };
+      break;
+    case "oldest":
+      sortCriteria = { createdAt: 1 };
+      break;
+    case "popular":
+      sortCriteria = { upvotes: -1 };
+      break;
+    default:
+      sortCriteria = { createdAt: -1 };
+  }
+
+  try {
+    const answers = await Answer.find({ question: questionId })
+      .populate("author", "_id name image")
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit);
+
+    const totalAnswers = await Answer.countDocuments({ question: questionId });
+    const isNext = totalAnswers > skip + answers.length;
+
+    return {
+      success: true,
+      data: {
+        answers: JSON.parse(JSON.stringify(answers)),
+        isNext,
+        totalAnswers,
+      },
+      status: 200,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
   }
 }

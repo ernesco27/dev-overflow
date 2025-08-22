@@ -11,18 +11,55 @@ import { getQuestion, incrementViews } from "@/lib/actions/question.action";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import AnswerForm from "@/components/forms/AnswerForm";
+import { GetAnswers } from "@/lib/actions/answer.action";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
-  const { success, data: question } = await getQuestion({
-    questionId: id,
-  });
+
+  const [questionResponse, answersResponse] = await Promise.all([
+    getQuestion({ questionId: id }),
+    GetAnswers({
+      questionId: id,
+      page: 1,
+      pageSize: 10,
+      filter: "latest",
+    }),
+  ]);
+
+  // Destructure responses
+  const {
+    success: questionSuccess,
+    data: question,
+    error: questionError,
+  } = questionResponse;
+  const {
+    success: answersSuccess,
+    data: answersResult,
+    error: answersError,
+  } = answersResponse;
+
+  // const { success, data: question } = await getQuestion({
+  //   questionId: id,
+  // });
+
+  // const {
+  //   success: areAnswersLoaded,
+  //   data: answersResult,
+  //   error: answersError,
+  // } = await GetAnswers({
+  //   questionId: id,
+  //   page: 1,
+  //   pageSize: 10,
+  //   filter: "latest",
+  // });
 
   after(async () => {
     await incrementViews({ questionId: id });
   });
 
-  if (!success || !question) return redirect("/404");
+  if (!questionSuccess || !question) return redirect("/404");
+
+  console.log("Answers Result:", answersResult);
 
   const {
     author,
