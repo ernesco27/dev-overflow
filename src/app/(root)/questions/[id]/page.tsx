@@ -12,6 +12,7 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import AnswerForm from "@/components/forms/AnswerForm";
 import { GetAnswers } from "@/lib/actions/answer.action";
+import AllAswers from "@/components/answers/AllAswers";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -33,7 +34,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     error: questionError,
   } = questionResponse;
   const {
-    success: answersSuccess,
+    success: areAnswersLoaded,
     data: answersResult,
     error: answersError,
   } = answersResponse;
@@ -133,6 +134,14 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           />
         ))}
       </div>
+      <section className="my-5">
+        <AllAswers
+          data={answersResult?.answers}
+          success={areAnswersLoaded}
+          error={answersError}
+          totalAnswers={answersResult?.totalAnswers || 0}
+        />
+      </section>
       <section className="my-5">
         <AnswerForm questionId={question._id} />
       </section>

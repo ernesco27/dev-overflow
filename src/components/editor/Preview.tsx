@@ -8,8 +8,13 @@ Code.theme = {
 };
 
 const Preview = ({ content = "" }: { content: string }) => {
-  const formattedContent = content.replace(/\\/g, "").replace(/&#x20;/g, "");
+  const formattedContent = content
+    .replace(/\\/g, "")
+    .replace(/&#x20;/g, "")
+    .replace(/DataRenderer<T>/g, "DataRenderer&lt;T&gt;")
+    .replace(/<T>/g, "&lt;T&gt;");
   return (
+
     <section className="markdown prose grid break-words">
       <MDXRemote
         source={formattedContent}
