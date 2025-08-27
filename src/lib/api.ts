@@ -1,5 +1,6 @@
 import { IAccount } from "../../database/account.model";
 import { IUser } from "../../database/user.model";
+import { SignInWithOAuthParams } from "../../types/action";
 import { fetchHandler } from "./handlers/fetch";
 
 const API_BASE_URL =
@@ -61,6 +62,13 @@ export const api = {
       fetchHandler(`${API_BASE_URL}/auth/signin-with-oauth`, {
         method: "POST",
         body: JSON.stringify({ provider, providerAccountId, user }),
+      }),
+  },
+  ai: {
+    getAnswer: (question: string, content: string) =>
+      fetchHandler(`${API_BASE_URL}/ai/answers`, {
+        method: "POST",
+        body: JSON.stringify({ question, content }),
       }),
   },
 };
