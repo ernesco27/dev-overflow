@@ -63,6 +63,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   console.log("Answers Result:", answersResult);
 
   const {
+    _id,
     author,
     createdAt,
     answers,
@@ -143,7 +144,11 @@ const QuestionDetails = async ({ params }: RouteParams) => {
         />
       </section>
       <section className="my-5">
-        <AnswerForm questionId={question._id} />
+        <AnswerForm
+          questionId={_id}
+          questionTitle={title}
+          questionContent={content}
+        />
       </section>
     </>
   );
