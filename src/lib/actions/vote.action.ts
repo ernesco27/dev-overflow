@@ -94,10 +94,14 @@ export const createVote = async (
           session
         );
       } else {
-        await Vote.findOneAndUpdate(
-          { _id: existingVote._id },
+        await Vote.findByIdAndUpdate(
+          existingVote._id,
           { voteType },
-          { session }
+          { new: true, session }
+        );
+        await updateVoteCount(
+          { targetId, targetType, voteType: existingVote.voteType, change: -1 },
+          session
         );
         await updateVoteCount(
           { targetId, targetType, voteType, change: 1 },
