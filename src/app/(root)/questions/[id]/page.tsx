@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { RouteParams, Tags } from "../../../../../types/global";
 import UserAvatar from "@/components/UserAvatar";
 import Link from "next/link";
@@ -11,16 +11,18 @@ import { getQuestion, incrementViews } from "@/lib/actions/question.action";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import AnswerForm from "@/components/forms/AnswerForm";
-import { GetAnswers } from "@/lib/actions/answer.action";
+
 import AllAswers from "@/components/answers/AllAswers";
 import Votes from "@/components/votes/Votes";
+import { hasVoted } from "@/lib/actions/vote.action";
+import { getAnswers } from "@/lib/actions/answer.action";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
 
   const [questionResponse, answersResponse] = await Promise.all([
     getQuestion({ questionId: id }),
-    GetAnswers({
+    getAnswers({
       questionId: id,
       page: 1,
       pageSize: 10,
@@ -39,6 +41,11 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     data: answersResult,
     error: answersError,
   } = answersResponse;
+
+  const hasVotedPromise = hasVoted({
+    targetId: question._id,
+    targetType: "question",
+  });
 
   // const { success, data: question } = await getQuestion({
   //   questionId: id,
@@ -60,8 +67,6 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   });
 
   if (!questionSuccess || !question) return redirect("/404");
-
-  console.log("Answers Result:", answersResult);
 
   const {
     _id,
@@ -95,12 +100,15 @@ const QuestionDetails = async ({ params }: RouteParams) => {
             </Link>
           </div>
           <div className="flex justify-end">
-            <Votes
-              upvotes={upVotes}
-              downvotes={downVotes}
-              hasupVoted={true}
-              hasdownVoted={false}
-            />
+            <Suspense fallback={<div>Loading...</div>}>
+              <Votes
+                upvotes={upVotes}
+                downvotes={downVotes}
+                hasVotedPromise={hasVotedPromise}
+                targetType="question"
+                targetId={question._id}
+              />
+            </Suspense>
           </div>
         </div>
         <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full">

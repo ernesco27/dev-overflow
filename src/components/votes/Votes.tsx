@@ -4,30 +4,53 @@ import handleError from "@/lib/handlers/error";
 import { cn, formatNumber } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { use, useState } from "react";
 import { toast } from "sonner";
-import { ErrorResponse } from "../../../types/global";
+import { ActionResponse, ErrorResponse } from "../../../types/global";
+import { HasVotedResponse } from "../../../types/action";
+import { createVote } from "@/lib/actions/vote.action";
 
 interface Props {
   upvotes: number;
   downvotes: number;
-  hasupVoted: boolean;
-  hasdownVoted: boolean;
+  hasVotedPromise: Promise<ActionResponse<HasVotedResponse>>;
+  targetType: "question" | "answer";
+  targetId: string;
 }
 
-const Votes = ({ upvotes, downvotes, hasupVoted, hasdownVoted }: Props) => {
+const Votes = ({
+  upvotes,
+  downvotes,
+  hasVotedPromise,
+  targetType,
+  targetId,
+}: Props) => {
   const [isloading, setIsLoading] = useState(false);
   const session = useSession();
   const userId = session.data?.user?.id;
 
-  const handleVote = async (VoteType: "upvote" | "downvote") => {
+  const { success, data } = use(hasVotedPromise);
+
+  const { hasUpVoted, hasDownVoted } = data || {};
+
+  const handleVote = async (voteType: "upvote" | "downvote") => {
     if (!userId) return toast.error("Please login to vote");
     setIsLoading(true);
     try {
+      const result = await createVote({
+        targetId,
+        targetType,
+        voteType,
+      });
+
+      if (!result.success) {
+        return toast.error("Failed to register your vote. Please try again.");
+      }
+
       const successMessage =
-        VoteType === "upvote"
-          ? `Upvote ${!hasupVoted ? "added" : "removed"} successfully`
-          : `Downvote ${!hasdownVoted ? "added" : "removed"} successfully`;
+        voteType === "upvote"
+          ? `Upvote ${!hasUpVoted ? "added" : "removed"} successfully`
+          : `Downvote ${!hasDownVoted ? "added" : "removed"} successfully`;
 
       toast.success(successMessage);
     } catch (error) {
@@ -42,7 +65,9 @@ const Votes = ({ upvotes, downvotes, hasupVoted, hasdownVoted }: Props) => {
     <div className="flex-center gap-2.5">
       <div className="flex-center gap-1.5">
         <Image
-          src={hasupVoted ? "/icons/upvoted.svg" : "/icons/upvote.svg"}
+          src={
+            success && hasUpVoted ? "/icons/upvoted.svg" : "/icons/upvote.svg"
+          }
           alt="upvote"
           width={18}
           height={18}
@@ -58,7 +83,11 @@ const Votes = ({ upvotes, downvotes, hasupVoted, hasdownVoted }: Props) => {
       </div>
       <div className="flex-center gap-1.5">
         <Image
-          src={hasdownVoted ? "/icons/downvoted.svg" : "/icons/downvote.svg"}
+          src={
+            success && hasDownVoted
+              ? "/icons/downvoted.svg"
+              : "/icons/downvote.svg"
+          }
           alt="downvote"
           width={18}
           height={18}

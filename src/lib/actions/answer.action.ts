@@ -72,7 +72,7 @@ export async function CreateAnwer(
   }
 }
 
-export async function GetAnswers(
+export async function getAnswers(
   params: GetAnswersParams
 ): Promise<
   ActionResponse<{ answers: Answer[]; isNext: boolean; totalAnswers: number }>

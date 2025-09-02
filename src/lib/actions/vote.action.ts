@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { Answer, Question, Vote } from "../../../database";
 import {
   CreateVoteParams,
@@ -17,6 +18,7 @@ import {
   updateVoteSchema,
 } from "../validations";
 import mongoose, { ClientSession } from "mongoose";
+import ROUTES from "../../../constants/route";
 
 export const updateVoteCount = async (
   params: UpdateVoteParams,
@@ -33,7 +35,7 @@ export const updateVoteCount = async (
   const { targetId, targetType, voteType, change } = validationResult.params!;
 
   const Model = targetType === "question" ? Question : Answer;
-  const voteField = voteType === "upvote" ? "upvotes" : "downvotes";
+  const voteField = voteType === "upvote" ? "upVotes" : "downVotes";
 
   try {
     const result = await Model.findByIdAndUpdate(
@@ -103,9 +105,20 @@ export const createVote = async (
         );
       }
     } else {
-      await Vote.create([{ targetId, targetType, voteType, change: 1 }], {
-        session,
-      });
+      await Vote.create(
+        [
+          {
+            author: userId,
+            actionId: targetId,
+            actionType: targetType,
+            voteType,
+            change: 1,
+          },
+        ],
+        {
+          session,
+        }
+      );
       await updateVoteCount(
         { targetId, targetType, voteType, change: 1 },
         session
@@ -113,6 +126,7 @@ export const createVote = async (
     }
 
     await session.commitTransaction();
+    revalidatePath(ROUTES.QUESTION(targetId));
     return { success: true };
   } catch (error) {
     await session.abortTransaction();
