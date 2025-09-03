@@ -1,12 +1,25 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Answer } from "../../../types/global";
 import UserAvatar from "../UserAvatar";
 import Link from "next/link";
 import ROUTES from "../../../constants/route";
 import { getTimeStamp } from "@/lib/utils";
 import Preview from "../editor/Preview";
+import Votes from "../votes/Votes";
+import { hasVoted } from "@/lib/actions/vote.action";
 
-const AnswerCard = ({ _id, author, content, createdAt }: Answer) => {
+const AnswerCard = ({
+  _id,
+  author,
+  content,
+  createdAt,
+  upVotes,
+  downVotes,
+}: Answer) => {
+  const hasVotedPromise = hasVoted({
+    targetId: _id,
+    targetType: "answer",
+  });
   return (
     <article className="light-border border-b py-10">
       <span id={JSON.stringify(_id)} className="hash-span" />
@@ -31,7 +44,17 @@ const AnswerCard = ({ _id, author, content, createdAt }: Answer) => {
             </p>
           </Link>
         </div>
-        <div className="flex justify-end">Votes</div>
+        <div className="flex justify-end">
+          <Suspense fallback={<div>Loading...</div>}>
+            <Votes
+              upvotes={upVotes}
+              downvotes={downVotes}
+              hasVotedPromise={hasVotedPromise}
+              targetType="answer"
+              targetId={_id}
+            />
+          </Suspense>
+        </div>
       </div>
       <Preview content={content} />
     </article>

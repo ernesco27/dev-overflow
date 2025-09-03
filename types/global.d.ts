@@ -18,6 +18,7 @@ interface Question {
   tags: Tags[];
   author: Author;
   upVotes: number;
+  downVotes: number;
   answers: number;
   views: number;
   createdAt: Date;
@@ -57,4 +58,6 @@ interface Answer {
   content: string;
   author: Author;
   createdAt: Date;
+  upVotes: number;
+  downVotes: number;
 }

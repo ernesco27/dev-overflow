@@ -34,7 +34,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   const {
     success: questionSuccess,
     data: question,
-    error: questionError,
+    // error: questionError,
   } = questionResponse;
   const {
     success: areAnswersLoaded,
