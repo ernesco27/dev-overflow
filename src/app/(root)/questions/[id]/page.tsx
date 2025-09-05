@@ -16,6 +16,7 @@ import AllAswers from "@/components/answers/AllAswers";
 import Votes from "@/components/votes/Votes";
 import { hasVoted } from "@/lib/actions/vote.action";
 import { getAnswers } from "@/lib/actions/answer.action";
+import SaveQuestion from "@/components/questions/SaveQuestion";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -108,6 +109,9 @@ const QuestionDetails = async ({ params }: RouteParams) => {
                 targetType="question"
                 targetId={question._id}
               />
+            </Suspense>
+            <Suspense fallback={<div>Loading...</div>}>
+              <SaveQuestion questionId={question._id} />
             </Suspense>
           </div>
         </div>
