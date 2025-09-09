@@ -17,6 +17,7 @@ import Votes from "@/components/votes/Votes";
 import { hasVoted } from "@/lib/actions/vote.action";
 import { getAnswers } from "@/lib/actions/answer.action";
 import SaveQuestion from "@/components/questions/SaveQuestion";
+import { hasSavedQuestion } from "@/lib/actions/collection.action";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -48,20 +49,9 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     targetType: "question",
   });
 
-  // const { success, data: question } = await getQuestion({
-  //   questionId: id,
-  // });
-
-  // const {
-  //   success: areAnswersLoaded,
-  //   data: answersResult,
-  //   error: answersError,
-  // } = await GetAnswers({
-  //   questionId: id,
-  //   page: 1,
-  //   pageSize: 10,
-  //   filter: "latest",
-  // });
+  const hasSavedQuestionPromise = hasSavedQuestion({
+    questionId: question._id,
+  });
 
   after(async () => {
     await incrementViews({ questionId: id });
@@ -100,7 +90,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
               </p>
             </Link>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end items-center gap-4 ">
             <Suspense fallback={<div>Loading...</div>}>
               <Votes
                 upvotes={upVotes}
@@ -111,7 +101,10 @@ const QuestionDetails = async ({ params }: RouteParams) => {
               />
             </Suspense>
             <Suspense fallback={<div>Loading...</div>}>
-              <SaveQuestion questionId={question._id} />
+              <SaveQuestion
+                questionId={question._id}
+                hasSavedQuestionPromise={hasSavedQuestionPromise}
+              />
             </Suspense>
           </div>
         </div>

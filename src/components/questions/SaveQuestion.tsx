@@ -5,14 +5,26 @@ import handleError from "@/lib/handlers/error";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { use, useState } from "react";
 import { toast } from "sonner";
+import { ActionResponse } from "../../../types/global";
 
-const SaveQuestion = ({ questionId }: { questionId: string }) => {
+interface SaveQuestionProps {
+  questionId: string;
+  hasSavedQuestionPromise: Promise<ActionResponse<{ saved: boolean }>>;
+}
+
+const SaveQuestion = ({
+  questionId,
+  hasSavedQuestionPromise,
+}: SaveQuestionProps) => {
   const session = useSession();
   const userId = session?.data?.user?.id;
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const { data } = use(hasSavedQuestionPromise);
+  const { saved: hasSaved } = data || {};
 
   const handleSave = async () => {
     if (isLoading) return;
@@ -40,7 +52,6 @@ const SaveQuestion = ({ questionId }: { questionId: string }) => {
     }
   };
 
-  const hasSaved = false;
   return (
     <Image
       src={hasSaved ? "/icons/star-filled.svg" : "/icons/star-red.svg"}

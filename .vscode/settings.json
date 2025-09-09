@@ -29,7 +29,7 @@
     "**/node_modules": true,
     //"**/dist": true,
     "**/build": true,
-    // "**/.next": true,
+    "**/.next": true,
     // "**/.cache": true,
     // "**/.git": true,
     "**/.vscode": true,
