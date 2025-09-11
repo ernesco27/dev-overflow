@@ -7,6 +7,8 @@ import QuestionCard from "@/components/cards/QuestionCard";
 import { getQuestions } from "@/lib/actions/question.action";
 import DataRenderer from "@/components/DataRenderer";
 import { EMPTY_QUESTION } from "../../../constants/states";
+import CommonFilter from "@/components/filters/CommonFilter";
+import { HomePageFilters } from "../../../constants/filters";
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
@@ -35,12 +37,17 @@ const Home = async ({ searchParams }: SearchParams) => {
           <Link href={ROUTES.ASK_QUESTION}>Ask a Question</Link>
         </Button>
       </section>
-      <section className="mt-11">
+      <section className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearch
           route="/"
           placeholder="Search questions here..."
           otherClasses="flex-1"
           imgSrc="/icons/search.svg"
+        />
+        <CommonFilter
+          filters={HomePageFilters}
+          otherClasses="min-h-[56px] sm:min-w-[170px]"
+          containerClasses="hidden max-md:flex"
         />
       </section>
       <HomeFilter />
