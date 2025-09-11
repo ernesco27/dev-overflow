@@ -19,16 +19,17 @@ import { getAnswers } from "@/lib/actions/answer.action";
 import SaveQuestion from "@/components/questions/SaveQuestion";
 import { hasSavedQuestion } from "@/lib/actions/collection.action";
 
-const QuestionDetails = async ({ params }: RouteParams) => {
+const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
+  const { page, pageSize, filter } = await searchParams;
 
   const [questionResponse, answersResponse] = await Promise.all([
     getQuestion({ questionId: id }),
     getAnswers({
       questionId: id,
-      page: 1,
-      pageSize: 10,
-      filter: "latest",
+      page: Number(page) || 1,
+      pageSize: Number(pageSize) || 10,
+      filter,
     }),
   ]);
 
