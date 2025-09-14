@@ -18,6 +18,7 @@ import {
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import { NotFoundError, UnauthorizedError } from "../http-errors";
+import dbConnect from "../mongoose";
 import {
   AskQuestionSchema,
   EditQuestionSchema,
@@ -358,3 +359,23 @@ export async function incrementViews(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export const getHotQuestions = async (): Promise<
+  ActionResponse<Question[]>
+> => {
+  try {
+    await dbConnect();
+
+    const questions = await Question.find()
+      .sort({ upVotes: -1, views: -1 })
+      .limit(5);
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(questions)),
+      status: 200,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
