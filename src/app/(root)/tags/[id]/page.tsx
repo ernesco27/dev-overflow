@@ -10,6 +10,7 @@ import { EMPTY_QUESTION } from "../../../../../constants/states";
 import QuestionCard from "@/components/cards/QuestionCard";
 import CommonFilter from "@/components/filters/CommonFilter";
 import { HomePageFilters } from "../../../../../constants/filters";
+import Pagination from "@/components/Pagination";
 
 const TagDetails = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
@@ -23,7 +24,7 @@ const TagDetails = async ({ params, searchParams }: RouteParams) => {
     filter,
   });
 
-  const { tag, questions } = data || {};
+  const { tag, questions, isNext } = data || {};
 
   return (
     <>
@@ -56,6 +57,7 @@ const TagDetails = async ({ params, searchParams }: RouteParams) => {
           </div>
         )}
       />
+      <Pagination page={page} isNext={isNext || false} />
     </>
   );
 };
