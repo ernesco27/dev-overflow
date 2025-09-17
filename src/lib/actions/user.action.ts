@@ -15,7 +15,7 @@ import { NotFoundError } from "../http-errors";
 
 export const getUsers = async (
   params: PaginatedSearchParams
-): Promise<ActionResponse<{ users: (typeof User)[]; isNext: boolean }>> => {
+): Promise<ActionResponse<{ users: User[]; isNext: boolean }>> => {
   const validationResult = await action({
     params,
     schema: PaginatedSearchParamsSchema,
@@ -83,7 +83,7 @@ export const getUser = async (
   params: GetUserParams
 ): Promise<
   ActionResponse<{
-    user: typeof User;
+    user: User;
     totalQuestions: number;
     totalAnswers: number;
   }>
