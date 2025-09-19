@@ -1,4 +1,8 @@
-import { getUser, getUserQuestions } from "@/lib/actions/user.action";
+import {
+  getUser,
+  getUserAnswers,
+  getUserQuestions,
+} from "@/lib/actions/user.action";
 import { RouteParams } from "../../../../../types/global";
 import { notFound } from "next/navigation";
 import { auth } from "../../../../../auth";
@@ -11,9 +15,10 @@ import { Button } from "@/components/ui/button";
 import Stats from "@/components/user/Stats";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DataRenderer from "@/components/DataRenderer";
-import { EMPTY_QUESTION } from "../../../../../constants/states";
+import { EMPTY_ANSWERS, EMPTY_QUESTION } from "../../../../../constants/states";
 import QuestionCard from "@/components/cards/QuestionCard";
 import Pagination from "@/components/Pagination";
+import AnswerCard from "@/components/cards/AnswerCard";
 
 const Profile = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
@@ -33,17 +38,33 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
 
   const { user, totalQuestions, totalAnswers } = data!;
 
+  const [getUserQuestionResponse, getUserAnswersResponse] = await Promise.all([
+    getUserQuestions({
+      userId: id,
+      page: Number(page) || 1,
+      pageSize: Number(pageSize) || 10,
+    }),
+    getUserAnswers({
+      userId: id,
+      page: Number(page) || 1,
+      pageSize: Number(pageSize) || 10,
+    }),
+  ]);
+
   const {
     success: userQuestionSuccess,
     data: userQuestions,
     error: userQuestionsError,
-  } = await getUserQuestions({
-    userId: id,
-    page: Number(page) || 1,
-    pageSize: Number(pageSize) || 10,
-  });
+  } = getUserQuestionResponse!;
+
+  const {
+    success: userAnswersSuccess,
+    data: userAnswers,
+    error: userAnswersError,
+  } = getUserAnswersResponse!;
 
   const { questions, isNext: hasMoreQuestions } = userQuestions!;
+  const { answers, isNext: hasMoreAnswers } = userAnswers!;
 
   const {
     _id,
@@ -144,7 +165,26 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
             <Pagination page={page} isNext={hasMoreQuestions} />
           </TabsContent>
           <TabsContent value="answers" className="flex w-full flex-col gap-6">
-            List of Answers
+            <DataRenderer
+              success={userAnswersSuccess}
+              error={userAnswersError}
+              data={answers}
+              empty={EMPTY_ANSWERS}
+              render={(answers) => (
+                <div className="mt-10 flex w-full flex-col gap-6">
+                  {answers.map((answer) => (
+                    <AnswerCard
+                      key={answer._id}
+                      {...answer}
+                      content={answer.content.slice(0, 27)}
+                      containerClasses="card-wrapper rounded-[10px] px-7 py-9 sm:px-11"
+                      showReadMore
+                    />
+                  ))}
+                </div>
+              )}
+            />
+            <Pagination page={page} isNext={hasMoreAnswers} />
           </TabsContent>
         </Tabs>
         <div className="flex w-full min-w-[250px] flex-1 flex-col max-lg:hidden">

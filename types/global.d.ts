@@ -61,6 +61,7 @@ interface Answer {
   createdAt: Date;
   upVotes: number;
   downVotes: number;
+  question: string;
 }
 
 interface User {
