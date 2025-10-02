@@ -19,6 +19,8 @@ import {
 } from "../validations";
 import mongoose, { ClientSession } from "mongoose";
 import ROUTES from "../../../constants/route";
+import { after } from "next/server";
+import { createInteraction } from "./interactions.action";
 
 export const updateVoteCount = async (
   params: UpdateVoteParams,
@@ -80,6 +82,15 @@ export const createVote = async (
   session.startTransaction();
 
   try {
+    const Model = targetType === "question" ? Question : Answer;
+    const contentDoc = await Model.findById(targetId).session(session);
+
+    if (!contentDoc) {
+      throw new Error("Content not found");
+    }
+
+    const contentAuthorId = contentDoc.author.toString();
+
     const existingVote = await Vote.findOne({
       author: userId,
       actionId: targetId,
@@ -128,6 +139,15 @@ export const createVote = async (
         session
       );
     }
+
+    after(async () => {
+      await createInteraction({
+        action: voteType,
+        actionId: targetId,
+        actionTarget: targetType,
+        authorId: contentAuthorId,
+      });
+    });
 
     await session.commitTransaction();
     revalidatePath(ROUTES.QUESTION(targetId));

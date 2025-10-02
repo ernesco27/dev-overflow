@@ -31,6 +31,8 @@ import {
   PaginatedSearchParamsSchema,
 } from "../validations";
 import mongoose, { FilterQuery } from "mongoose";
+import { after } from "next/server";
+import { createInteraction } from "./interactions.action";
 
 export async function createQuestion(
   params: CreateQuestionsParams
@@ -84,6 +86,16 @@ export async function createQuestion(
       { $push: { tags: { $each: tagIds } } },
       { session }
     );
+
+    after(async () => {
+      await createInteraction({
+        action: "post",
+        actionId: question._id.toString(),
+        actionTarget: "question",
+        authorId: userId as string,
+      });
+    });
+
     await session.commitTransaction();
 
     return {

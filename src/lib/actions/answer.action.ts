@@ -19,6 +19,8 @@ import {
 } from "../validations";
 import mongoose from "mongoose";
 import ROUTES from "../../../constants/route";
+import { after } from "next/server";
+import { createInteraction } from "./interactions.action";
 
 export async function CreateAnwer(
   params: CreateAnswerParams
@@ -62,6 +64,15 @@ export async function CreateAnwer(
 
     question.answers += 1;
     await question.save({ session });
+
+    after(async () => {
+      await createInteraction({
+        action: "post",
+        actionId: newAnswer._id.toString(),
+        actionTarget: "answer",
+        authorId: userId as string,
+      });
+    });
 
     await session.commitTransaction();
 
