@@ -88,3 +88,9 @@ interface BadgeCount {
   SILVER: number;
   BRONZE: number;
 }
+
+interface Badges {
+  GOLD: number;
+  SILVER: number;
+  BRONZE: number;
+}

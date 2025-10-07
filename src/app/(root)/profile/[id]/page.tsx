@@ -2,6 +2,7 @@ import {
   getUser,
   getUserAnswers,
   getUserQuestions,
+  getUserStats,
   getUserTopTags,
 } from "@/lib/actions/user.action";
 import { RouteParams } from "../../../../../types/global";
@@ -34,7 +35,8 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
 
   const loggedInUser = await auth();
 
-  const { success, data, error } = await getUser({ userId: id });
+  const { success, data: user, error } = await getUser({ userId: id });
+  const { data: userStats } = await getUserStats({ userId: id });
 
   if (!success) {
     return (
@@ -42,7 +44,7 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
     );
   }
 
-  const { user, totalQuestions, totalAnswers } = data!;
+  const { totalQuestions, totalAnswers, badges } = userStats!;
 
   const [
     getUserQuestionResponse,
@@ -150,9 +152,9 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
         </div>
       </section>
       <Stats
-        totalQuestions={totalQuestions}
+        totalQuestions={totalQuestions!}
         totalAnswers={totalAnswers}
-        badges={{ GOLD: 0, SILVER: 0, BRONZE: 0 }}
+        badges={badges}
         reputationPoints={user.reputation || 0}
       />
       <section className="mt-10 flex gap-10">
