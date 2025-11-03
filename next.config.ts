@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
         port: "",
       },
     ],
+    qualities: [100, 75, 50, 25],
   },
 };
 
