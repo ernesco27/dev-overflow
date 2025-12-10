@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { formUrlQuery } from "@/lib/url";
+import Image from "next/image";
 
 interface Filter {
   name: string;
@@ -21,12 +22,16 @@ interface Props {
   filters: Filter[];
   otherClasses?: string;
   containerClasses?: string;
+  placeholder?: string;
+  imgSrc?: string;
 }
 
 const CommonFilter = ({
   filters,
   otherClasses = "",
   containerClasses = "",
+  placeholder = "",
+  imgSrc = "",
 }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -56,8 +61,15 @@ const CommonFilter = ({
           )}
           aria-label="filter options"
         >
+          <Image
+            src={imgSrc}
+            alt="search icon"
+            width={24}
+            height={24}
+            className="cursor-pointer"
+          />
           <div className="line-clamp-1 flex-1 text-left">
-            <SelectValue placeholder="Select a filter" />
+            <SelectValue placeholder={placeholder} />
           </div>
         </SelectTrigger>
         <SelectContent>

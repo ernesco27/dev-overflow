@@ -63,3 +63,14 @@ export const BADGE_CRITERIA = {
     GOLD: 100000,
   },
 };
+
+export const InteractionActionEnums = [
+  "view",
+  "upvote",
+  "downvote",
+  "bookmark",
+  "post",
+  "edit",
+  "delete",
+  "search",
+] as const;

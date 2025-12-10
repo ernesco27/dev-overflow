@@ -273,69 +273,70 @@ export const getQuestion = cache(async function getQuestion(
   }
 });
 
-export const getRecommendedQuestions = async ({
-  userId,
-  query,
-  skip,
-  limit,
-}: RecommendationParams) => {
-  const interactions = await Interaction.find({
-    user: new Types.ObjectId(userId),
-    actionType: "Question",
-    action: { $in: ["view", "upvote", "post", "bookmark"] },
-  })
-    .sort({ createdAt: -1 })
-    .limit(50)
-    .lean();
+export const getRecommendedQuestions = cache(
+  async function getRecommendedQuestions({
+    userId,
+    query,
+    skip,
+    limit,
+  }: RecommendationParams) {
+    const interactions = await Interaction.find({
+      user: new Types.ObjectId(userId),
+      actionType: "Question",
+      action: { $in: ["view", "upvote", "post", "bookmark"] },
+    })
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .lean();
 
-  const interactedQuestionIds = interactions.map(
-    (interaction) => interaction.actionId
-  );
+    const interactedQuestionIds = interactions.map(
+      (interaction) => interaction.actionId
+    );
 
-  const interactedQuestions = await Question.find({
-    _id: { $in: interactedQuestionIds },
-  }).select("tags");
+    const interactedQuestions = await Question.find({
+      _id: { $in: interactedQuestionIds },
+    }).select("tags");
 
-  const allTags = interactedQuestions.flatMap((question) =>
-    question.tags.map((tag: Types.ObjectId) => tag.toString())
-  );
+    const allTags = interactedQuestions.flatMap((question) =>
+      question.tags.map((tag: Types.ObjectId) => tag.toString())
+    );
 
-  const uniqueTagIds = [...new Set(allTags)];
+    const uniqueTagIds = [...new Set(allTags)];
 
-  const recommendedQuery: FilterQuery<typeof Question> = {
-    _id: { $nin: interactedQuestionIds },
-    author: { $ne: new Types.ObjectId(userId) },
-    tags: {
-      $in: uniqueTagIds.map((tagId: string) => new Types.ObjectId(tagId)),
-    },
-  };
+    const recommendedQuery: FilterQuery<typeof Question> = {
+      _id: { $nin: interactedQuestionIds },
+      author: { $ne: new Types.ObjectId(userId) },
+      tags: {
+        $in: uniqueTagIds.map((tagId: string) => new Types.ObjectId(tagId)),
+      },
+    };
 
-  if (query) {
-    recommendedQuery.$or = [
-      { title: { $regex: query, $options: "i" } },
-      { content: { $regex: query, $options: "i" } },
-    ];
+    if (query) {
+      recommendedQuery.$or = [
+        { title: { $regex: query, $options: "i" } },
+        { content: { $regex: query, $options: "i" } },
+      ];
+    }
+
+    const total = await Question.countDocuments(recommendedQuery);
+
+    const questions = await Question.find(recommendedQuery)
+      .populate("tags", "name")
+      .populate("author", "name image")
+      .sort({ upvote: -1, views: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const isNext = total > skip + questions.length;
+
+    return {
+      questions: JSON.parse(JSON.stringify(questions)),
+      isNext,
+    };
   }
-
-  const total = await Question.countDocuments(recommendedQuery);
-
-  const questions = await Question.find(recommendedQuery)
-    .populate("tags", "name")
-    .populate("author", "name image")
-    .sort({ upvote: -1, views: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean();
-
-  const isNext = total > skip + questions.length;
-
-  return {
-    questions: JSON.parse(JSON.stringify(questions)),
-    isNext,
-  };
-};
-
-export async function getQuestions(
+);
+export const getQuestions = cache(async function getQuestions(
   params: PaginatedSearchParams
 ): Promise<ActionResponse<{ questions: Question[]; isNext: boolean }>> {
   const validationResult = await action({
@@ -424,7 +425,7 @@ export async function getQuestions(
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
-}
+});
 
 export async function incrementViews(
   params: IncrementViewsParams
