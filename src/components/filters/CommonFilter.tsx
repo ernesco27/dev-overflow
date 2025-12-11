@@ -16,6 +16,7 @@ import Image from "next/image";
 interface Filter {
   name: string;
   value: string;
+  svg?: string;
 }
 
 interface Props {
@@ -76,7 +77,17 @@ const CommonFilter = ({
           <SelectGroup>
             {filters.map((filter) => (
               <SelectItem key={filter.name} value={filter.value}>
-                {filter.name}
+                <span className="flex-center gap-2">
+                  {filter.svg && (
+                    <Image
+                      src={filter.svg}
+                      alt={filter.name}
+                      width={24}
+                      height={24}
+                    />
+                  )}
+                  {filter.name}
+                </span>
               </SelectItem>
             ))}
           </SelectGroup>

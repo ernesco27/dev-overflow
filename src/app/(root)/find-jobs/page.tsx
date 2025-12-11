@@ -2,13 +2,12 @@ import CommonFilter from "@/components/filters/CommonFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { HomePageFilters } from "../../../../constants/filters";
 import DataRenderer from "@/components/DataRenderer";
-import QuestionCard from "@/components/cards/QuestionCard";
-import Pagination from "@/components/Pagination";
-import { error } from "console";
-import { success } from "zod";
+
 import { EMPTY_QUESTION } from "../../../../constants/states";
-import page from "../page";
+
 import JobCard from "@/components/cards/JobCard";
+import { api } from "@/lib/api";
+import { getCountries } from "@/lib/actions/countries.action";
 
 const availableJobs = [
   {
@@ -43,7 +42,17 @@ const availableJobs = [
   },
 ];
 
-const FindJobs = () => {
+const FindJobs = async () => {
+  const { data: rawData } = await getCountries();
+
+  const countries = rawData!.countries
+    .map((country) => ({
+      name: country.name.common,
+      value: country.name.common,
+      svg: country.flags.svg,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   let error;
   return (
     <>
@@ -57,7 +66,7 @@ const FindJobs = () => {
             imgSrc="/icons/search.svg"
           />
           <CommonFilter
-            filters={HomePageFilters}
+            filters={countries}
             otherClasses="min-h-[56px] sm:min-w-[170px]"
             containerClasses=" max-md:flex"
             imgSrc="/icons/search.svg"

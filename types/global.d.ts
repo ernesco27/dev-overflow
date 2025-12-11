@@ -94,3 +94,8 @@ interface Badges {
   SILVER: number;
   BRONZE: number;
 }
+
+interface CountryApiData {
+  name: { common: string };
+  flags: { svg: string };
+}
