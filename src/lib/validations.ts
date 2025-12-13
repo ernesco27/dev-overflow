@@ -143,6 +143,7 @@ export const PaginatedSearchParamsSchema = z.object({
   query: z.string().optional(),
   filter: z.string().optional(),
   sort: z.string().optional(),
+  country: z.string().optional(),
 });
 
 export const GetTagQuestionsSchema = PaginatedSearchParamsSchema.extend({

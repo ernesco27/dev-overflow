@@ -1,6 +1,5 @@
 "use server";
 
-import { cache } from "react";
 import handleError from "../handlers/error";
 import {
   ActionResponse,
@@ -8,12 +7,12 @@ import {
   ErrorResponse,
 } from "../../../types/global";
 
-export const getCountries = cache(async function getCountries(): Promise<
+export const getCountries = async (): Promise<
   ActionResponse<{ countries: CountryApiData[] }>
-> {
+> => {
   try {
     const response = await fetch(
-      "https://restcountries.com/v3.1/all?fields=name,flags",
+      "https://restcountries.com/v3.1/all?fields=name,flags,cca2",
       {
         next: { revalidate: 86400 },
       }
@@ -33,4 +32,4 @@ export const getCountries = cache(async function getCountries(): Promise<
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
-});
+};

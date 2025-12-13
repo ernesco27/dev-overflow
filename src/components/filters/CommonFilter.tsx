@@ -42,7 +42,7 @@ const CommonFilter = ({
   const handleUpdateParams = (value: string) => {
     const newUrl = formUrlQuery({
       params: searchParams.toString(),
-      key: "filter",
+      key: "country",
       value,
     });
 
@@ -76,7 +76,7 @@ const CommonFilter = ({
         <SelectContent>
           <SelectGroup>
             {filters.map((filter) => (
-              <SelectItem key={filter.name} value={filter.value}>
+              <SelectItem key={filter.name} value={filter.value.toLowerCase()}>
                 <span className="flex-center gap-2">
                   {filter.svg && (
                     <Image
