@@ -32,7 +32,7 @@ const JobResults = async ({ searchParams }: SearchParams) => {
       render={(jobs) => (
         <div className="mt-10 flex w-full flex-col gap-6">
           {jobs.map((job: any) => (
-            <JobCard key={job.id} job={job} showActionBtns />
+            <JobCard key={job.job_id} job={job} showActionBtns />
           ))}
         </div>
       )}

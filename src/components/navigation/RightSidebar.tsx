@@ -6,34 +6,11 @@ import TagCard from "../cards/TagCard";
 import { getHotQuestions } from "@/lib/actions/question.action";
 import DataRenderer from "../DataRenderer";
 import { getTopTags } from "@/lib/actions/tag.action";
-
-// const popularTags = [
-//   {
-//     _id: "1",
-//     name: "react",
-//     questions: 120,
-//   },
-//   {
-//     _id: "2",
-//     name: "javaScript",
-//     questions: 95,
-//   },
-//   { _id: "3", name: "css", questions: 80 },
-//   {
-//     _id: "4",
-//     name: "html",
-//     questions: 70,
-//   },
-//   {
-//     _id: "5",
-//     name: "node.js",
-//     questions: 60,
-//   },
-// ];
+import { cacheLife } from "next/cache";
 
 const RightSidebar = async () => {
-  // const { success, data: hotQuestions, error } = await getHotQuestions();
-  // const { success, data: popularTags, error } = await getTopTags();
+  "use cache";
+  cacheLife("max");
 
   const [questionsResponse, tagsResponse] = await Promise.all([
     getHotQuestions(),

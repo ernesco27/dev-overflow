@@ -460,9 +460,9 @@ export async function incrementViews(
   }
 }
 
-export const getHotQuestions = async (): Promise<
+export const getHotQuestions = cache(async function getHotQuestions(): Promise<
   ActionResponse<Question[]>
-> => {
+> {
   try {
     await dbConnect();
 
@@ -478,7 +478,7 @@ export const getHotQuestions = async (): Promise<
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
-};
+});
 
 export const deleteUserQuestion = async (
   params: DeleteQuestionParams

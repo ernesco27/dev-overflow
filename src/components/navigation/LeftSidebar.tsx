@@ -4,6 +4,7 @@ import Image from "next/image";
 import NavLinks from "./navbar/NavLinks";
 import { auth, signOut } from "../../../auth";
 import ROUTES from "../../../constants/route";
+import { cacheLife } from "next/cache";
 
 const LeftSidebar = async () => {
   const session = await auth();
@@ -18,7 +19,10 @@ const LeftSidebar = async () => {
       <div className="flex flex-col gap-3">
         {!userId ? (
           <>
-            <Button className="small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none cursor-pointer">
+            <Button
+              asChild
+              className="small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none cursor-pointer"
+            >
               <Link href={ROUTES.SIGN_IN}>
                 <Image
                   src="/icons/account.svg"
@@ -32,7 +36,10 @@ const LeftSidebar = async () => {
                 </span>
               </Link>
             </Button>
-            <Button className="small-medium light-border-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg border px-4 py-3 shadow-none cursor-pointer">
+            <Button
+              asChild
+              className="small-medium light-border-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg border px-4 py-3 shadow-none cursor-pointer"
+            >
               <Link href={ROUTES.SIGN_UP}>
                 <Image
                   src="/icons/sign-up.svg"
@@ -54,7 +61,7 @@ const LeftSidebar = async () => {
           >
             <Button
               type="submit"
-              className="base-medium w-fit !bg-transparent px-4 py-3 cursor-pointer"
+              className="base-medium w-fit bg-transparent! px-4 py-3 cursor-pointer"
             >
               <Image
                 src="/icons/logout-3.svg"

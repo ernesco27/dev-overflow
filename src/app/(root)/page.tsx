@@ -3,31 +3,18 @@ import Link from "next/link";
 import ROUTES from "../../../constants/route";
 import LocalSearch from "@/components/search/LocalSearch";
 import HomeFilter from "@/components/filters/HomeFilter";
-import QuestionCard from "@/components/cards/QuestionCard";
-import { getQuestions } from "@/lib/actions/question.action";
-import DataRenderer from "@/components/DataRenderer";
-import { EMPTY_QUESTION } from "../../../constants/states";
+
 import CommonFilter from "@/components/filters/CommonFilter";
 import { HomePageFilters } from "../../../constants/filters";
-import Pagination from "@/components/Pagination";
+
+import { Suspense } from "react";
+import QuestionResults from "@/components/QuestionResults";
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
 
 const Home = async ({ searchParams }: SearchParams) => {
-  const { page, pageSize, query, filter } = await searchParams;
-
-  const { success, data, error } = await getQuestions({
-    page: Number(page) || 1,
-    pageSize: Number(pageSize) || 10,
-    query: query || "",
-    filter: filter || "",
-  });
-
-  // const questions = data?.questions || [];
-  const { questions, isNext } = data || {};
-
   return (
     <>
       <section className="w-full flex flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center ">
@@ -53,21 +40,9 @@ const Home = async ({ searchParams }: SearchParams) => {
         />
       </section>
       <HomeFilter />
-
-      <DataRenderer
-        success={success}
-        error={error}
-        data={questions}
-        empty={EMPTY_QUESTION}
-        render={(questions) => (
-          <div className="mt-10 flex w-full flex-col gap-6">
-            {questions.map((question) => (
-              <QuestionCard key={question._id} question={question} />
-            ))}
-          </div>
-        )}
-      />
-      <Pagination page={page} isNext={isNext || false} />
+      <Suspense fallback={<div className="mt-10">Loading questions...</div>}>
+        <QuestionResults searchParams={searchParams} />
+      </Suspense>
     </>
   );
 };

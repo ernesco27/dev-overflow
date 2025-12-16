@@ -26,9 +26,26 @@ export const getJobs = async (
   const skip = (Number(page) - 1) * pageSize;
   const limit = Number(pageSize);
 
+  let currentLocation;
+
   try {
+    const location = await fetch(
+      "http://ip-api.com/json/?fields=status,message,countryCode",
+      {
+        next: { revalidate: 86400 },
+      }
+    );
+
+    if (!location.ok) {
+      throw new Error(`Current Location API error: ${location.statusText}`);
+    }
+
+    const locResponse = await location.json();
+
+    currentLocation = locResponse.countryCode.toLowerCase();
+
     const response = await fetch(
-      `https://api.openwebninja.com/jsearch/search?query="${query}"&page=${page}&num_pages=1&country=${country}&language=en&date_posted=all&work_from_home=false`,
+      `https://api.openwebninja.com/jsearch/search?query="${query}"&page=${page}&num_pages=1&country=${country || currentLocation}&language=en&date_posted=all&work_from_home=false`,
       {
         headers: {
           "x-api-key": `${process.env.JSEARCH_API_KEY}`,
